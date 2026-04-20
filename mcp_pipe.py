@@ -1,4 +1,4 @@
-# mcp_pipe.py - 硬编码版MCP连接器
+# mcp_pipe.py - hardcoded version of the MCP connector
 import asyncio
 import websockets
 import subprocess
@@ -7,10 +7,10 @@ import signal
 import sys
 import random
 
-# 硬编码配置（直接修改这里！）
-MCP_ENDPOINT = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjY3Njk4NCwiYWdlbnRJZCI6MTYyNjg3OSwiZW5kcG9pbnRJZCI6ImFnZW50XzE2MjY4NzkiLCJwdXJwb3NlIjoibWNwLWVuZHBvaW50IiwiaWF0IjoxNzc2NjkwODE3LCJleHAiOjE4MDgyNDg0MTd9.qnK35hxo-_gEqQ6ZTlqjy3t3QZuOYHNU-BKJRVWjdr1cP70US_DQ0enOXYAr0IISN7ANn5-QDoOotYlcVLGu5g"  # 替换为你的真实token
+# Hardcoded configuration (modify token here directly!)
+MCP_ENDPOINT = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjY3Njk4NCwiYWdlbnRJZCI6MTYyNjg3OSwiZW5kcG9pbnRJZCI6ImFnZW50XzE2MjY4NzkiLCJwdXJwb3NlIjoibWNwLWVuZHBvaW50IiwiaWF0IjoxNzc2NjkwODE3LCJleHAiOjE4MDgyNDg0MTd9.qnK35hxo-_gEqQ6ZTlqjy3t3QZuOYHNU-BKJRVWjdr1cP70US_DQ0enOXYAr0IISN7ANn5-QDoOotYlcVLGu5g"
 
-# 日志配置
+# Log configuration
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -18,7 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger('MCP_PIPE')
 
 async def pipe_websocket_to_process(websocket, process):
-    """WebSocket → 子进程"""
+    """WebSocket → Child Process"""
     try:
         while True:
             message = await websocket.recv()
@@ -27,11 +27,11 @@ async def pipe_websocket_to_process(websocket, process):
             process.stdin.write(message + '\n')
             process.stdin.flush()
     except Exception as e:
-        logger.error(f"WebSocket读取失败: {e}")
+        logger.error(f"WebSocket read failed: {e}")
         raise
 
 async def pipe_process_to_websocket(process, websocket):
-    """子进程 → WebSocket"""
+    """Child process → WebSocket"""
     try:
         while True:
             line = await asyncio.get_event_loop().run_in_executor(
@@ -41,11 +41,11 @@ async def pipe_process_to_websocket(process, websocket):
                 break
             await websocket.send(line)
     except Exception as e:
-        logger.error(f"进程输出转发失败: {e}")
+        logger.error(f"Process output forwarding failed: {e}")
         raise
 
 async def run_service():
-    """主服务循环"""
+    """Main service loop"""
     while True:
         try:
             async with websockets.connect(MCP_ENDPOINT) as ws:
@@ -62,17 +62,17 @@ async def run_service():
                 )
         except Exception as e:
             wait = min(random.uniform(1, 10), 60)
-            logger.warning(f"连接中断，{wait:.1f}秒后重试... 错误: {e}")
+            logger.warning(f"Connection interrupted, try again after {wait:.1f} seconds... Error: {e}")
             await asyncio.sleep(wait)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, lambda *_: sys.exit(0))
     
     if len(sys.argv) < 2:
-        logger.error("用法: python mcp_pipe.py websitesearch.py")
+        logger.error("usage: python mcp_pipe.py websitesearch.py")
         sys.exit(1)
 
     try:
         asyncio.run(run_service())
     except KeyboardInterrupt:
-        logger.info("服务已停止")
+        logger.info("Service has stopped")
