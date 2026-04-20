@@ -8,7 +8,7 @@ import sys
 import random
 
 # 硬编码配置（直接修改这里！）
-MCP_ENDPOINT = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1N89sInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI5NzMzNywiYWdlbnRJZCI6MjkwOTgyLCJlbmRwb2ludElkIjoiYWdlbnRfMjkwOTgyIiwicHVycG9zZSI6Im1jcC1lbmRwb2ludCIsImlhdCI6MTc0OTM3ODY3N30.Gdrb75cZrDN4mmYdJSjSzH37Q32EoXavclGMrW4EQ0keIsShUZViz493FSZSwqG5FkiJeJtcrF8PkrTqDrz1lQ"  # 替换为你的真实token
+MCP_ENDPOINT = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjY3Njk4NCwiYWdlbnRJZCI6MTYyNjg3OSwiZW5kcG9pbnRJZCI6ImFnZW50XzE2MjY4NzkiLCJwdXJwb3NlIjoibWNwLWVuZHBvaW50IiwiaWF0IjoxNzc2NjkwODE3LCJleHAiOjE4MDgyNDg0MTd9.qnK35hxo-_gEqQ6ZTlqjy3t3QZuOYHNU-BKJRVWjdr1cP70US_DQ0enOXYAr0IISN7ANn5-QDoOotYlcVLGu5g"  # 替换为你的真实token
 
 # 日志配置
 logging.basicConfig(
