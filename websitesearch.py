@@ -1,4 +1,4 @@
-# websearch.py - 动态年份处理版
+# websearch.py ​​- dynamic year processing version
 from mcp.server.fastmcp import FastMCP
 import sys
 import logging
@@ -14,47 +14,47 @@ logger = logging.getLogger('xiaozhi_search')
 mcp = FastMCP("mcps")
 
 def extract_and_validate_time(text: str) -> datetime:
-    """从文本提取时间并验证是否为本年度"""
+    """Extract time from text and verify if it is the current year"""
     now = datetime.now()
     current_year = now.year
 
-    # 1. 处理完整日期 (2024年6月15日)
-    if match := re.search(r'(\d{4})年(\d{1,2})月(\d{1,2})日', text):
+    # 1. Complete date of processing (June 15, 2024)
+    if match := re.search(r'(\d{4})Year(\d{1,2})Month(\d{1,2})Day', text):
         year, month, day = map(int, match.groups())
         if year == current_year:
             return datetime(year, month, day)
 
-    # 2. 处理无年份日期 (6月15日)
-    elif match := re.search(r'(\d{1,2})月(\d{1,2})日', text):
+    # 2. Handle date without year (June 15)
+    elif match := re.search(r'(\d{1,2})month(\d{1,2})day', text):
         month, day = map(int, match.groups())
         return datetime(current_year, month, day)
 
-    # 3. 处理简写日期 (06-15)
+    # 3. Process abbreviated dates (06-15)
     elif match := re.search(r'(\d{1,2})-(\d{1,2})', text):
         month, day = map(int, match.groups())
         return datetime(current_year, month, day)
 
-    # 4. 处理相对时间 (3小时前)
-    elif '小时前' in text:
+    # 4. Process relative time (3 hours ago)
+    elif 'hours ago' in text:
         hours = int(re.search(r'\d+', text).group())
         return now - timedelta(hours=hours)
-    elif '分钟前' in text:
+    elif 'minutes ago' in text:
         mins = int(re.search(r'\d+', text).group())
         return now - timedelta(minutes=mins)
 
-    return None  # 非本年度或无效时间
+    return None  # Non-current year or invalid time
 
 def generate_time_description(time_obj: datetime) -> str:
-    """生成口语化时间描述"""
+    """Generate colloquial time description"""
     delta = datetime.now() - time_obj
     if delta.days == 0:
         if delta.seconds >= 3600:
-            return f"{delta.seconds//3600}小时前"
-        return f"{delta.seconds//60}分钟前"
-    return f"{time_obj.month}月{time_obj.day}日"
+            return f"{delta.seconds//3600} hours ago"
+        return f"{delta.seconds//60} minutes ago"
+    return f"{time_obj.month}month{time_obj.day}"
 
 async def fetch_duckduckgo_results(query: str) -> list:
-    """仅获取本年度的 DuckDuckGo 搜索结果"""
+    """Get only DuckDuckGo search results for this year"""
     headers = {"User-Agent": "Mozilla/5.0"}
     url = f"https://duckduckgo.com/html/?q={quote(query)}"
 
@@ -91,7 +91,7 @@ async def fetch_duckduckgo_results(query: str) -> list:
 
 @mcp.tool()
 async def websitesearch(query_text: str) -> list:
-    """仅返回本年度最新 3 条结果"""
+    """Return only the latest 20 results of this year"""
     results = await fetch_duckduckgo_results(query_text)
     return {
         "success": bool(results),
